@@ -2,7 +2,6 @@ from PIL import Image
 import os
 import cv2
 
-
 class OverlappingTiledCropper:
     def __init__(
         self,
