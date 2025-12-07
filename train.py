@@ -1,5 +1,5 @@
-from .data import Folder
-from anomalib.modanomalibels import Patchcore
+from anomalib.data import Folder
+from anomalib.models import Patchcore
 from anomalib.engine import Engine
 from anomalib.deploy import ExportType
 
