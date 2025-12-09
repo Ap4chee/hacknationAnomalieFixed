@@ -5,13 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
-brudne
-czyste
 test_tiled
 .idea
 # Virtual environments
 .venv
-*.bmp
 uv.lock
 NAUKA/
 .DS_Store
