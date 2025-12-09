@@ -5,8 +5,6 @@ build/
 dist/
 wheels/
 *.egg-info
-brudne
-czyste
 test_tiled
 .idea
 # Virtual environments
