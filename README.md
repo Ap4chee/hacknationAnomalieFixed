@@ -1,15 +1,26 @@
+# hacknationAnomalieFixed
 
-![](prev.jpeg)
-## Software AI system for anomaly detection
+System AI do automatycznej identyfikacji anomalii na obrazach RTG środków transportu, wspierający funkcjonariuszy KAS w wykrywaniu ukrytych przedmiotów/anomalii.
 
-System AI do automatycznej identyfikacji anomalii na obrazach RTG środków transportu, wspierający funkcjonariuszy KAS w wykrywaniu ukrytych
+## 📥 Instalacja
 
-### To install all dependencies
-		sh ./install.sh
+Poniższe kroki opisują, jak przygotować środowisko i zainstalować wszystkie wymagane zależności do uruchomienia projektu.
 
-### Train a mode if needed on your custom data
-		sh ./train_model.sh
+### 1. Klonowanie repozytorium (jeśli jeszcze nie wykonano)
 
-### Run anomaly detector
-		sh ./checkanomaly.sh <image_path> [output_dir]
+```bash
+git clone [https://github.com/Ap4chee/hacknationAnomalieFixed](https://github.com/Ap4chee/hacknationAnomalieFixed)
+cd hacknationAnomalieFixed
 
+```
+# 2. Normalizacja Danych
+Ten krok przygotowuje obrazy, standaryzując ich wartości przed dalszym przetwarzaniem.
+
+```bash
+python data_normalization.py
+```
+
+
+# link do dokumentacji anomalib:
+
+https://anomalib.readthedocs.io/en/v2.2.0/markdown/get_started/anomalib.html
