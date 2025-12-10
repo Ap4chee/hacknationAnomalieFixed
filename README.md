@@ -1,15 +1,19 @@
+🚀 Uruchomienie Systemu Detekcji Anomalii
+Jeśli chcesz przetwarzać obrazy krok po kroku (Normalizacja, Filtrowanie, a następnie Detekcja Anomalii), postępuj zgodnie z poniższą sekwencją komend.
 
-![](prev.jpeg)
-## Software AI system for anomaly detection
+1. Normalizacja Danych
+Ten krok prawdopodobnie przygotowuje obrazy do dalszego przetwarzania lub trenowania, standaryzując ich wartości (np. intensywność pikseli).
 
-System AI do automatycznej identyfikacji anomalii na obrazach RTG środków transportu, wspierający funkcjonariuszy KAS w wykrywaniu ukrytych
+Uruchom skrypt do normalizacji danych:
 
-### To install all dependencies
-		sh ./install.sh
+Bash
 
-### Train a mode if needed on your custom data
-		sh ./train_model.sh
+python data_normalization.py
+2. Zastosowanie Filtra
+Po normalizacji należy zastosować odpowiedni filtr (np. w celu redukcji szumów lub uwydatnienia krawędzi) za pomocą skryptu apply_filter.py.
 
-### Run anomaly detector
-		sh ./checkanomaly.sh <image_path> [output_dir]
+Uruchom skrypt do zastosowania filtru:
 
+Bash
+
+python apply_filter.py
