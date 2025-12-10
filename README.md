@@ -19,3 +19,8 @@ Ten krok przygotowuje obrazy, standaryzując ich wartości przed dalszym przetwa
 ```bash
 python data_normalization.py
 ```
+
+
+# link do dokumentacji anomalib:
+
+https://anomalib.readthedocs.io/en/v2.2.0/markdown/get_started/anomalib.html
