@@ -1,19 +1,21 @@
-🚀 Uruchomienie Systemu Detekcji Anomalii
-Jeśli chcesz przetwarzać obrazy krok po kroku (Normalizacja, Filtrowanie, a następnie Detekcja Anomalii), postępuj zgodnie z poniższą sekwencją komend.
+# hacknationAnomalieFixed
 
-1. Normalizacja Danych
-Ten krok prawdopodobnie przygotowuje obrazy do dalszego przetwarzania lub trenowania, standaryzując ich wartości (np. intensywność pikseli).
+System AI do automatycznej identyfikacji anomalii na obrazach RTG środków transportu, wspierający funkcjonariuszy KAS w wykrywaniu ukrytych przedmiotów/anomalii.
 
-Uruchom skrypt do normalizacji danych:
+## 📥 Instalacja
 
-Bash
+Poniższe kroki opisują, jak przygotować środowisko i zainstalować wszystkie wymagane zależności do uruchomienia projektu.
 
+### 1. Klonowanie repozytorium (jeśli jeszcze nie wykonano)
+
+```bash
+git clone [https://github.com/Ap4chee/hacknationAnomalieFixed](https://github.com/Ap4chee/hacknationAnomalieFixed)
+cd hacknationAnomalieFixed
+
+```
+# 2. Normalizacja Danych
+Ten krok przygotowuje obrazy, standaryzując ich wartości przed dalszym przetwarzaniem.
+
+```bash
 python data_normalization.py
-2. Zastosowanie Filtra
-Po normalizacji należy zastosować odpowiedni filtr (np. w celu redukcji szumów lub uwydatnienia krawędzi) za pomocą skryptu apply_filter.py.
-
-Uruchom skrypt do zastosowania filtru:
-
-Bash
-
-python apply_filter.py
+```
