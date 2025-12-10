@@ -10,8 +10,8 @@ test_tiled
 # Virtual environments
 .venv
 uv.lock
-NAUKA/
+raw_data/
 .DS_Store
 ImageProcessor/__pycache__/
 results/Patchcore/contraband_xray/latest/weights/torch/
-results/Patchcore/contraband_xray/v2/
+results/Patchcore/contraband_xray/

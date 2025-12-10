@@ -1,35 +1,46 @@
 from anomalib.data import PredictDataset
 from anomalib.engine import Engine
 from anomalib.models import Patchcore
-from anomalib.visualization import visualize_anomaly_map
 import torch
 
-import matplotlib.pyplot as plt
 import cv2
 import numpy as np
-import torch
 from pathlib import Path
 
 
-def save_overlay(original_img, anomaly_map, out_path):
-    """
-    Creates a heatmap overlay with alpha channel based on anomaly intensity.
-    Saves to out_path as PNG with transparency.
-    """
-    anomaly_clipped = np.clip(anomaly_map, 0.0, 1.0)
-    anomaly_uint8 = (anomaly_clipped * 255).astype(np.uint8)
+def aggregate_tile_predictions(predictions, tiles, original_shape, tile_size=128):
+    """Agreguj mapy anomalii z kafelków do jednej mapy dla całego obrazu."""
+    h, w = original_shape[:2]
 
-    # Apply "JET" heatmap for visualization
-    heatmap_color = cv2.applyColorMap(anomaly_uint8, cv2.COLORMAP_JET)
+    # Mapa sumująca anomalie i mapa liczników (dla uśrednienia w overlapach)
+    anomaly_sum = np.zeros((h, w), dtype=np.float32)
+    count_map = np.zeros((h, w), dtype=np.float32)
 
-    # Create alpha channel based on anomaly intensity
-    # Areas with higher anomaly scores get higher opacity
-    alpha = (anomaly_clipped * 255).astype(np.uint8)
+    for pred, tile in zip(predictions, tiles):
+        x, y = tile.x, tile.y
+        anomaly_map = pred.anomaly_map.squeeze().cpu().numpy()
 
-    # Add alpha channel to heatmap (BGRA format)
-    heatmap_rgba = np.dstack((heatmap_color, alpha))
+        # Dodaj do sumy i zwiększ licznik
+        anomaly_sum[y : y + tile_size, x : x + tile_size] += anomaly_map
+        count_map[y : y + tile_size, x : x + tile_size] += 1
 
-    cv2.imwrite(str(out_path), heatmap_rgba)
+    # Uśrednij w miejscach overlapa
+    count_map[count_map == 0] = 1  # Unikaj dzielenia przez zero
+    aggregated = anomaly_sum / count_map
+
+    return aggregated
+
+
+def compute_global_anomaly_score(aggregated_map, method="percentile"):
+    """Oblicz globalny wynik anomalii dla całego obrazu."""
+    if method == "percentile":
+        return np.percentile(aggregated_map, 99)  # Top 1% pikseli
+    elif method == "mean_top_k":
+        flat = aggregated_map.flatten()
+        top_k = int(len(flat) * 0.01)
+        return np.mean(np.sort(flat)[-top_k:])
+    else:
+        return np.max(aggregated_map)
 
 
 class PatchcoreAnomalyRunner:
@@ -57,7 +68,7 @@ class PatchcoreAnomalyRunner:
         # Initialize model & engine
         self.model = Patchcore(
             backbone="resnet18",
-            pre_trained=True,
+            pre_trained=False,
             coreset_sampling_ratio=0.01,
         )
         self.engine = Engine()
@@ -102,23 +113,29 @@ class PatchcoreAnomalyRunner:
                 elif anom.ndim == 3:
                     anom = anom[0]
                 anom = anom.numpy()
-            if prediction.pred_score < 0.75:
+            # Filtruj po score
+            if prediction.pred_score < 0.45:
                 continue
 
-            # ---- Save heatmap only ----
+            # ---- Zapisz heatmapę jako PNG ----
+            # Normalizuj do 0-255
+            anom_normalized = np.clip(anom, 0, 1)
+            anom_uint8 = (anom_normalized * 255).astype(np.uint8)
+            heatmap_color = cv2.applyColorMap(anom_uint8, cv2.COLORMAP_JET)
+            
             heatmap_path = self.out_dir / f"{stem}_heatmap.png"
-            plt.imsave(heatmap_path, anom, cmap="jet")
-
-            # ---- Save overlay heatmap-on-original ----
-            overlay_path = self.out_dir / f"{stem}_overlay.png"
-            save_overlay(original, anom, overlay_path)
+            cv2.imwrite(str(heatmap_path), heatmap_color)
+            
+            # Zapisz też surową mapę jako grayscale PNG (do agregacji)
+            anomaly_path = self.out_dir / f"{stem}_anomaly.png"
+            cv2.imwrite(str(anomaly_path), anom_uint8)
 
             # Print results
             print(f"[{i}] {image_path}")
             print(f"  label: {prediction.pred_label}")
             print(f"  score: {float(prediction.pred_score):.4f}")
             print(f"  saved heatmap: {heatmap_path}")
-            print(f"  saved overlay: {overlay_path}")
+            print(f"  saved anomaly: {anomaly_path}")
 
             results.append(
                 {
@@ -126,8 +143,7 @@ class PatchcoreAnomalyRunner:
                     "image_path": image_path,
                     "label": prediction.pred_label,
                     "score": float(prediction.pred_score),
-                    "heatmap_path": str(heatmap_path),
-                    "overlay_path": str(overlay_path),
+                    "anomaly_path": str(anomaly_path),
                 }
             )
 

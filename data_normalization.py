@@ -7,8 +7,8 @@ if __name__ == "__main__":
         clean_data_folder = os.sys.argv[1]
         clean_output_directory = os.sys.argv[2]
     else:
-        clean_data_folder = "NAUKA/brudne"
-        clean_output_directory = "bad"
+        clean_data_folder = "raw_data/czyste"
+        clean_output_directory = "good"
         if not os.path.exists(clean_output_directory):
             os.makedirs(clean_output_directory)
         if not os.path.exists(clean_data_folder):

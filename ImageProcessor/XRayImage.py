@@ -44,14 +44,23 @@ class XRayImage:
             self.load(src)
 
     # ------------------------------------------------------------------
-    def load(self, path):
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Plik nie istnieje: {path}")
-        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        if img is None:
-            raise ValueError("Nie udało się wczytać obrazu — format nieobsługiwany")
-        self.imgPath = path
-        self.img = img
+    def load(self, src: str) -> None:
+        if not os.path.exists(src):
+            raise FileNotFoundError(f"File not found: {src}")
+        
+        self.img = cv2.imread(src, cv2.IMREAD_GRAYSCALE)
+        
+        if self.img is None:
+            raise ValueError(f"Failed to load image: {src}")
+        
+        # Dodatkowa walidacja
+        if self.img.size == 0:
+            raise ValueError(f"Loaded image is empty: {src}")
+        
+        if self.img.shape[0] < 10 or self.img.shape[1] < 10:
+            raise ValueError(f"Image too small: {self.img.shape}")
+        
+        self.imgPath = src
 
     # ------------------------------------------------------------------
     def applyFilters(self):
@@ -60,7 +69,7 @@ class XRayImage:
         self.img = self.filters.process(self.img)
 
     # ------------------------------------------------------------------
-    def generateTiles(self, tile_size=128, min_overlap=0.5, crop_to_object=False):
+    def generateTiles(self, tile_size=256, min_overlap=0.5, crop_to_object=False):
         """
         Tworzy nakładające się kafelki (tiles) z przetworzonego obrazu.
 
@@ -105,8 +114,12 @@ class XRayImage:
             for x in xs:
                 tile_data = img_to_tile[y:y + tile_size, x:x + tile_size].copy()
 
-                # Pomijamy całkowicie białe kafelki
-                if np.mean(tile_data) >= 254:
+                # Pomijamy całkowicie/prawie białe kafelki (średnia > 240)
+                # oraz kafelki gdzie >90% pikseli jest białych (>245)
+                mean_val = np.mean(tile_data)
+                white_ratio = np.sum(tile_data > 245) / tile_data.size
+                
+                if mean_val >= 240 or white_ratio > 0.90:
                     continue
 
                 tile = Tile(index=index, x=x, y=y, data=tile_data)
@@ -133,7 +146,7 @@ class XRayImage:
 
 # # ------------------------ TESTY ------------------------
 # if __name__ == '__main__':
-#     xray = XRayImage("C:\\Users\\jakub\\Desktop\\NAUKA\\czyste\\202511180023\\48001F003202511180023 czarno.bmp")
+#     xray = XRayImage("C:\\Users\\jakub\\Desktop\\raw_data\\czyste\\202511180023\\48001F003202511180023 czarno.bmp")
 #     xray.applyFilters()
 #     tiles = xray.generateTiles(tile_size=512)
 
