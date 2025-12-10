@@ -1,7 +1,7 @@
 class_path: anomalib.data.Folder
 init_args:
   name: "test_solo"
-  root: "fixed_data"
+  root: "normalized_data"
   normal_dir: "good"
   abnormal_dir: "bad"
   #normal_test_dir: "test/good"
