@@ -14,4 +14,4 @@ uv.lock
 ImageProcessor/__pycache__/
 results/Patchcore/contraband_xray/latest/weights/torch/
 results/Patchcore/contraband_xray/
-normalized_data/
+datasets/

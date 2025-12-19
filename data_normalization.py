@@ -26,5 +26,5 @@ def normalize(data_folder: str, output_directory: str):
 
 
 if __name__ == "__main__":
-    normalize("raw_data/czyste", "normalized_data/good")
-    normalize("raw_data/brudne", "normalized_data/bad")
+    normalize("raw_data/czyste", "datasets/train/good")
+    normalize("raw_data/brudne", "datasets/test/defect")
