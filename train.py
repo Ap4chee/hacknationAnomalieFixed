@@ -20,7 +20,10 @@ def main():
     datamodule.setup()
 
     # 2. Inicjalizacja Modelu
-    model = Patchcore()
+    model = Patchcore(
+        backbone="resnet18",
+        pre_trained=True
+    )
 
     # 3. Konfiguracja Silnika (Engine)
     engine = Engine(
